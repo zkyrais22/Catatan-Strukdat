@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Struktur Data — M. Zakaria Putra | 250411100043</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --bg2: #0f1218;
+    --surface: #151923;
+    --surface2: #1c2333;
+    --border: #252d3d;
+    --border2: #2e3a50;
+    --accent: #00d4ff;
+    --accent2: #7c5cfc;
+    --accent3: #ff6b6b;
+    --accent4: #00ff9d;
+    --text: #e8edf5;
+    --text2: #8a96a8;
+    --text3: #5a6476;
+    --card-glow: rgba(0, 212, 255, 0.08);
+    --card-glow2: rgba(124, 92, 252, 0.08);
+    --card-glow3: rgba(255, 107, 107, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ambient blobs */
+  .blob1 {
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    animation: blobMove1 20s ease-in-out infinite;
+  }
+  .blob2 {
+    position: fixed;
+    bottom: -200px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(124,92,252,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    animation: blobMove2 25s ease-in-out infinite;
+  }
+  @keyframes blobMove1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(100px,80px)} }
+  @keyframes blobMove2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-80px,-60px)} }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    height: 64px;
+    background: rgba(10,12,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .nav-logo span { color: var(--text2); font-weight: 400; font-size: 0.85rem; }
+  .nav-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 4px 12px;
+    border-radius: 100px;
+  }
+  .nav-links {
+    display: flex; gap: 8px;
+  }
+  .nav-link {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 6px 16px;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .nav-link:hover { color: var(--text); background: var(--surface); }
+  .nav-link.tugas { color: var(--accent3); border: 1px solid rgba(255,107,107,0.3); }
+  .nav-link.tugas:hover { background: rgba(255,107,107,0.1); }
+
+  /* MAIN WRAPPER */
+  main { position: relative; z-index: 1; padding-top: 64px; }
+
+  /* HERO */
+  .hero {
+    padding: 100px 40px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent4);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 .line2 {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-desc {
+    color: var(--text2);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 560px;
+    margin-bottom: 40px;
+    font-weight: 300;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-stats {
+    display: flex; gap: 40px;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .stat-item { text-align: left; }
+  .stat-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label { color: var(--text3); font-size: 0.8rem; margin-top: 4px; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  /* DIVIDER */
+  .section-divider {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex; align-items: center; gap: 20px;
+    margin-bottom: 40px;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+  .divider-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text3);
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .divider-label .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+
+  /* SECTION */
+  .section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px 80px;
+  }
+  .section-header {
+    margin-bottom: 36px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .section-sub { color: var(--text2); font-size: 0.9rem; }
+
+  /* CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: fadeUp 0.5s ease both;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .card:hover {
+    border-color: var(--border2);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .card:hover::before { opacity: 1; }
+
+  /* Card type A - blue */
+  .card-a::before { background: var(--card-glow); }
+  .card-a:hover { border-color: rgba(0,212,255,0.4); box-shadow: 0 20px 60px rgba(0,212,255,0.1); }
+  /* Card type B - purple */
+  .card-b::before { background: var(--card-glow2); }
+  .card-b:hover { border-color: rgba(124,92,252,0.4); box-shadow: 0 20px 60px rgba(124,92,252,0.1); }
+  /* Card type C - red */
+  .card-c::before { background: var(--card-glow3); }
+  .card-c:hover { border-color: rgba(255,107,107,0.4); box-shadow: 0 20px 60px rgba(255,107,107,0.1); }
+  /* Card type D - green */
+  .card-d:hover { border-color: rgba(0,255,157,0.4); box-shadow: 0 20px 60px rgba(0,255,157,0.1); }
+  .card-d::before { background: rgba(0,255,157,0.05); }
+
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    position: relative; z-index: 1;
+    flex-shrink: 0;
+  }
+  .icon-blue { background: rgba(0,212,255,0.12); border: 1px solid rgba(0,212,255,0.2); }
+  .icon-purple { background: rgba(124,92,252,0.12); border: 1px solid rgba(124,92,252,0.2); }
+  .icon-red { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.2); }
+  .icon-green { background: rgba(0,255,157,0.12); border: 1px solid rgba(0,255,157,0.2); }
+  .icon-orange { background: rgba(255,165,0,0.12); border: 1px solid rgba(255,165,0,0.2); }
+  .icon-teal { background: rgba(0,200,180,0.12); border: 1px solid rgba(0,200,180,0.2); }
+
+  .card-body { position: relative; z-index: 1; flex: 1; }
+  .card-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: -0.3px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .card-desc {
+    font-size: 0.8rem;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 1;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .card-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border2);
+  }
+  .card-arrow {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text3);
+    font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+  .card:hover .card-arrow { background: var(--accent); border-color: var(--accent); color: #000; }
+  .card-b:hover .card-arrow { background: var(--accent2); border-color: var(--accent2); }
+  .card-c:hover .card-arrow { background: var(--accent3); border-color: var(--accent3); color: #000; }
+  .card-d:hover .card-arrow { background: var(--accent4); border-color: var(--accent4); color: #000; }
+
+  /* TUGAS SECTION */
+  .tugas-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px 100px;
+  }
+  .tugas-header {
+    margin-bottom: 36px;
+  }
+  .tugas-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,107,107,0.1);
+    border: 1px solid rgba(255,107,107,0.3);
+    color: var(--accent3);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+  .tugas-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .tugas-title .highlight { color: var(--accent3); }
+  .tugas-sub { color: var(--text2); font-size: 0.9rem; }
+
+  .tugas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .tugas-card {
+    background: var(--surface);
+    border: 1px solid rgba(255,107,107,0.2);
+    border-radius: 20px;
+    padding: 32px;
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: fadeUp 0.5s ease both;
+  }
+  .tugas-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,107,107,0.04);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .tugas-card:hover {
+    border-color: rgba(255,107,107,0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 24px 80px rgba(255,107,107,0.15);
+  }
+  .tugas-card:hover::before { opacity: 1; }
+
+  .tugas-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 4rem;
+    font-weight: 700;
+    color: rgba(255,107,107,0.08);
+    position: absolute;
+    top: 16px; right: 20px;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .tugas-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: rgba(255,107,107,0.12);
+    border: 1px solid rgba(255,107,107,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    position: relative; z-index: 1;
+  }
+  .tugas-body { position: relative; z-index: 1; flex: 1; }
+  .tugas-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent3);
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
+  .tugas-card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.3px;
+    margin-bottom: 10px;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .tugas-card-desc {
+    font-size: 0.82rem;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .tugas-card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 1;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,107,107,0.15);
+  }
+  .tugas-file-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent3);
+    opacity: 0.7;
+  }
+  .tugas-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,107,107,0.12);
+    border: 1px solid rgba(255,107,107,0.3);
+    color: var(--accent3);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .tugas-card:hover .tugas-btn {
+    background: var(--accent3);
+    border-color: var(--accent3);
+    color: #fff;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    text-align: center;
+    color: var(--text3);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    position: relative; z-index: 1;
+  }
+  footer strong { color: var(--text2); }
+
+  /* Stagger animations */
+  .card:nth-child(1) { animation-delay: 0.05s }
+  .card:nth-child(2) { animation-delay: 0.1s }
+  .card:nth-child(3) { animation-delay: 0.15s }
+  .card:nth-child(4) { animation-delay: 0.2s }
+  .card:nth-child(5) { animation-delay: 0.25s }
+  .card:nth-child(6) { animation-delay: 0.3s }
+  .card:nth-child(7) { animation-delay: 0.35s }
+  .card:nth-child(8) { animation-delay: 0.4s }
+  .card:nth-child(9) { animation-delay: 0.45s }
+  .card:nth-child(10) { animation-delay: 0.5s }
+  .card:nth-child(11) { animation-delay: 0.55s }
+  .card:nth-child(12) { animation-delay: 0.6s }
+  .card:nth-child(13) { animation-delay: 0.65s }
+  .card:nth-child(14) { animation-delay: 0.7s }
+  .card:nth-child(15) { animation-delay: 0.75s }
+  .tugas-card:nth-child(1) { animation-delay: 0.1s }
+  .tugas-card:nth-child(2) { animation-delay: 0.2s }
+  .tugas-card:nth-child(3) { animation-delay: 0.3s }
+
+  @media (max-width: 900px) {
+    .tugas-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 20px; }
+    .hero, .section, .tugas-section { padding-left: 20px; padding-right: 20px; }
+    .section-divider { padding: 0 20px; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 600px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 24px; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob1"></div>
+<div class="blob2"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    ⬡ STRUKDAT
+    <span>/ M. Zakaria Putra</span>
+  </div>
+  <div class="nav-badge">NIM · 250411100043</div>
+  <div class="nav-links">
+    <a href="#materi" class="nav-link">Materi</a>
+    <a href="#tugas" class="nav-link tugas">🔥 Tugas Demo</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">Struktur Data &amp; Algoritma · 2024/2025</div>
+    <h1>
+      Catatan<br>
+      <span class="line2">Struktur Data</span>
+    </h1>
+    <p class="hero-desc">
+      Kumpulan catatan dan tugas mata kuliah Struktur Data. Dari sorting algorithms sampai tree structures, semua terdokumentasi dengan rapi di sini.
+    </p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">15</div>
+        <div class="stat-label">Catatan Materi</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Tugas Demo</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Jam Ngoding</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVIDER: MATERI -->
+  <div class="section-divider" id="materi">
+    <div class="divider-line"></div>
+    <div class="divider-label">
+      <span class="dot" style="background:var(--accent)"></span>
+      CATATAN MATERI STRUKTUR DATA
+    </div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- SECTION: STRUKTUR DATA DASAR -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">📦 Struktur Data Dasar</div>
+      <div class="section-sub">Stack, Queue, Linked List, dan konsep dasar penyimpanan data</div>
+    </div>
+    <div class="cards-grid">
+
+      <a href="STACK.html" class="card card-a" target="_blank">
+        <div class="card-icon icon-blue">🗂️</div>
+        <div class="card-body">
+          <div class="card-num"># 01</div>
+          <div class="card-title">Stack</div>
+          <div class="card-desc">Struktur data LIFO (Last In First Out). Push & pop operasi dasar untuk manajemen data tumpukan.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">LIFO</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="QUEUE.html" class="card card-b" target="_blank">
+        <div class="card-icon icon-purple">🎰</div>
+        <div class="card-body">
+          <div class="card-num"># 02</div>
+          <div class="card-title">Queue</div>
+          <div class="card-desc">Struktur data FIFO (First In First Out). Enqueue & dequeue untuk antrian data.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">FIFO</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="LinkedLink.html" class="card card-a" target="_blank">
+        <div class="card-icon icon-teal">🔗</div>
+        <div class="card-body">
+          <div class="card-num"># 03</div>
+          <div class="card-title">Linked List</div>
+          <div class="card-desc">Struktur data dinamis dengan node yang saling terhubung. Single & double linked list.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Dynamic</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="HASHING.html" class="card card-d" target="_blank">
+        <div class="card-icon icon-green">🔑</div>
+        <div class="card-body">
+          <div class="card-num"># 04</div>
+          <div class="card-title">Hashing</div>
+          <div class="card-desc">Teknik pemetaan data ke indeks menggunakan hash function. Collision handling dan open addressing.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">O(1)</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- SECTION: SORTING -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">🔃 Sorting Algorithms</div>
+      <div class="section-sub">Berbagai algoritma pengurutan data dengan kompleksitas berbeda</div>
+    </div>
+    <div class="cards-grid">
+
+      <a href="BubbleSort.html" class="card card-b" target="_blank">
+        <div class="card-icon icon-purple">🫧</div>
+        <div class="card-body">
+          <div class="card-num"># 05</div>
+          <div class="card-title">Bubble Sort</div>
+          <div class="card-desc">Algoritma pengurutan dengan membandingkan dan menukar elemen bersebelahan secara berulang.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">O(n²)</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="selection.html" class="card card-a" target="_blank">
+        <div class="card-icon icon-blue">🎯</div>
+        <div class="card-body">
+          <div class="card-num"># 06</div>
+          <div class="card-title">Selection Sort</div>
+          <div class="card-desc">Mencari elemen minimum/maksimum dan menempatkannya pada posisi yang benar secara berulang.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">O(n²)</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="insertion.html" class="card card-d" target="_blank">
+        <div class="card-icon icon-green">📥</div>
+        <div class="card-body">
+          <div class="card-num"># 07</div>
+          <div class="card-title">Insertion Sort</div>
+          <div class="card-desc">Membangun array terurut satu per satu dengan menyisipkan elemen ke posisi yang tepat.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">O(n²)</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="mergesort.html" class="card card-b" target="_blank">
+        <div class="card-icon icon-purple">⚡</div>
+        <div class="card-body">
+          <div class="card-num"># 08</div>
+          <div class="card-title">Merge Sort</div>
+          <div class="card-desc">Divide and conquer: membagi array menjadi dua bagian, sort, lalu gabungkan kembali.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">O(n log n)</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="quicksort.html" class="card card-c" target="_blank">
+        <div class="card-icon icon-red">🚀</div>
+        <div class="card-body">
+          <div class="card-num"># 09</div>
+          <div class="card-title">Quick Sort</div>
+          <div class="card-desc">Algoritma sorting tercepat rata-rata. Memilih pivot dan mempartisi array secara rekursif.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">O(n log n)</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="Counting.html" class="card card-a" target="_blank">
+        <div class="card-icon icon-blue">🔢</div>
+        <div class="card-body">
+          <div class="card-num"># 10</div>
+          <div class="card-title">Counting Sort</div>
+          <div class="card-desc">Sorting non-komparatif yang menghitung frekuensi kemunculan setiap elemen.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">O(n+k)</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- SECTION: POHON & REKURSIF -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">🌳 Tree, Rekursif &amp; Searching</div>
+      <div class="section-sub">Struktur hierarki data dan algoritma pencarian</div>
+    </div>
+    <div class="cards-grid">
+
+      <a href="Tree.html" class="card card-d" target="_blank">
+        <div class="card-icon icon-green">🌲</div>
+        <div class="card-body">
+          <div class="card-num"># 11</div>
+          <div class="card-title">Tree</div>
+          <div class="card-desc">Struktur data hierarki non-linear dengan root, node, dan leaf. Traversal in/pre/post-order.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Hierarchical</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="BinariTree.html" class="card card-b" target="_blank">
+        <div class="card-icon icon-purple">🔵</div>
+        <div class="card-body">
+          <div class="card-num"># 12</div>
+          <div class="card-title">Binary Tree</div>
+          <div class="card-desc">Pohon khusus di mana setiap node memiliki paling banyak dua anak: kiri dan kanan.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">BST</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="ParsingBT.html" class="card card-a" target="_blank">
+        <div class="card-icon icon-blue">🔍</div>
+        <div class="card-body">
+          <div class="card-num"># 13</div>
+          <div class="card-title">Parsing Binary Tree</div>
+          <div class="card-desc">Teknik parsing dan traversal pada binary tree. Ekspresi aritmatika dengan tree.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Parsing</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="Rekursif.html" class="card card-c" target="_blank">
+        <div class="card-icon icon-red">🔄</div>
+        <div class="card-body">
+          <div class="card-num"># 14</div>
+          <div class="card-title">Rekursif</div>
+          <div class="card-desc">Fungsi yang memanggil dirinya sendiri. Basis rekursi dan stack call untuk penyelesaian masalah kompleks.</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Recursive</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="searching.html" class="card card-d" target="_blank">
+        <div class="card-icon icon-teal">🔎</div>
+        <div class="card-body">
+          <div class="card-num"># 15</div>
+          <div class="card-title">Searching</div>
+          <div class="card-desc">Algoritma pencarian data: Linear Search O(n) dan Binary Search O(log n).</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Search</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- DIVIDER: TUGAS -->
+  <div class="section-divider" id="tugas">
+    <div class="divider-line"></div>
+    <div class="divider-label" style="color:var(--accent3)">
+      <span class="dot" style="background:var(--accent3);animation:pulse 1s infinite"></span>
+      TUGAS DEMO — NIM 250411100043
+    </div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- TUGAS SECTION -->
+  <section class="tugas-section">
+    <div class="tugas-header">
+      <div class="tugas-badge">⚡ Demo Day</div>
+      <div class="tugas-title">Tugas <span class="highlight">Demonstrasi</span></div>
+      <div class="tugas-sub">3 tugas utama yang akan dipresentasikan dan dinilai oleh dosen. Klik untuk membuka.</div>
+    </div>
+
+    <div class="tugas-grid">
+
+      <a href="250411100043_LinkedList.html" class="tugas-card" target="_blank">
+        <div class="tugas-num">01</div>
+        <div class="tugas-icon">🔗</div>
+        <div class="tugas-body">
+          <div class="tugas-label">TUGAS 01 · IMPLEMENTASI</div>
+          <div class="tugas-card-title">Linked List Implementation</div>
+          <div class="tugas-card-desc">Implementasi struktur data Linked List dari scratch menggunakan Python. Mencakup operasi insert, delete, search, dan traversal pada single linked list.</div>
+        </div>
+        <div class="tugas-card-footer">
+          <span class="tugas-file-tag">250411100043_LinkedList.html</span>
+          <div class="tugas-btn">Buka <span>→</span></div>
+        </div>
+      </a>
+
+      <a href="250411100043_MZakariaPutra.html" class="tugas-card" target="_blank">
+        <div class="tugas-num">02</div>
+        <div class="tugas-icon">👤</div>
+        <div class="tugas-body">
+          <div class="tugas-label">TUGAS 02 · STRUKTUR DATA</div>
+          <div class="tugas-card-title">M. Zakaria Putra — Struktur Data</div>
+          <div class="tugas-card-desc">Tugas individu implementasi berbagai konsep struktur data. Stack, queue, dan operasi-operasi fundamental dalam pemrosesan data.</div>
+        </div>
+        <div class="tugas-card-footer">
+          <span class="tugas-file-tag">250411100043_MZakariaPutra.html</span>
+          <div class="tugas-btn">Buka <span>→</span></div>
+        </div>
+      </a>
+
+      <a href="250411100043_MZakariaPutra_sort.html" class="tugas-card" target="_blank">
+        <div class="tugas-num">03</div>
+        <div class="tugas-icon">🔃</div>
+        <div class="tugas-body">
+          <div class="tugas-label">TUGAS 03 · SORTING</div>
+          <div class="tugas-card-title">M. Zakaria Putra — Sorting Algorithms</div>
+          <div class="tugas-card-desc">Implementasi dan analisis berbagai algoritma sorting. Perbandingan performa bubble, selection, insertion, merge, dan quick sort.</div>
+        </div>
+        <div class="tugas-card-footer">
+          <span class="tugas-file-tag">250411100043_MZakariaPutra_sort.html</span>
+          <div class="tugas-btn">Buka <span>→</span></div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>M. Zakaria Putra</strong> &nbsp;·&nbsp; NIM 250411100043 &nbsp;·&nbsp; Struktur Data &amp; Algoritma &nbsp;·&nbsp; 2025/2026<br>
+</footer>
+
+<script>
+  // Intersection Observer for scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.card, .tugas-card').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Active nav highlight
+  const sections = document.querySelectorAll('#materi, #tugas');
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 100;
+      if (pageYOffset >= sectionTop) current = section.getAttribute('id');
+    });
+    navLinks.forEach(link => {
+      link.style.color = '';
+      if (link.getAttribute('href') === '#' + current) {
+        link.style.color = 'var(--text)';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
